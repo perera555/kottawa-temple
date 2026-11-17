@@ -43,7 +43,7 @@ const itemCls = (active: boolean) =>
   `flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition duration-200 ${
     active
       ? "bg-gradient-to-b from-[#ffe17a] to-flag-yellow font-semibold text-[#2a0f0b] shadow-[0_4px_0_#b88c00,0_10px_16px_-6px_rgba(0,0,0,0.6)] -translate-y-0.5"
-      : "hover:bg-white/10 hover:-translate-y-0.5"
+      : "bg-white/[0.04] shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_3px_0_rgba(0,0,0,0.35)] hover:bg-white/10 hover:-translate-y-0.5"
   }`;
 
 function useCurrentSection(groups: NavGroup[]) {
@@ -90,8 +90,8 @@ export function AdminNav({ groups }: { groups: NavGroup[] }) {
   const q = group.section === "users" ? "" : `?section=${group.section}`;
 
   return (
-    <nav className="flex gap-1 overflow-x-auto px-3 pb-3 lg:flex-col lg:overflow-visible">
-      <p className="hidden px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-widest text-flag-yellow/80 lg:block">
+    <nav className="flex gap-1.5 overflow-x-auto px-3 pb-3 md:flex-col md:overflow-visible">
+      <p className="hidden px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-widest text-flag-yellow/80 md:block">
         {group.emoji} {group.label}
       </p>
       {group.section !== "users" && (

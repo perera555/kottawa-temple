@@ -38,9 +38,9 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   }
 
   return (
-    <div data-section="temple" className="flex min-h-screen flex-col bg-paper lg:flex-row">
+    <div data-section="temple" className="flex min-h-screen flex-col bg-paper md:flex-row">
       {/* LEFT NAV */}
-      <aside className="bg-[#2a0f0b] text-white/85 lg:sticky lg:top-0 lg:h-screen lg:w-64 lg:shrink-0 lg:overflow-y-auto">
+      <aside className="admin-sidebar text-white/85 md:sticky md:top-0 md:h-screen md:w-64 md:shrink-0 md:overflow-y-auto">
         <div className="flag-stripe h-1" />
         <Link href="/admin" className="flex items-center gap-3 p-5">
           <DharmaWheel className="wheel-3d h-10 w-10 text-flag-yellow" />

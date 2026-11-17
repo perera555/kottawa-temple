@@ -15,7 +15,7 @@ export function NavLinks({ items, extra }: { items: Item[]; extra: React.ReactNo
 
   return (
     <>
-      <nav className="hidden xl:flex items-center gap-1.5">
+      <nav className="hidden lg:flex flex-wrap items-center justify-center gap-2">
         {items.map((i) => (
           <Link
             key={i.href}
@@ -27,7 +27,7 @@ export function NavLinks({ items, extra }: { items: Item[]; extra: React.ReactNo
         ))}
       </nav>
       <button
-        className="xl:hidden rounded-full p-2 text-ink hover:bg-accent-soft"
+        className="lg:hidden rounded-xl bg-white/15 p-2 text-white shadow-[0_3px_0_rgba(0,0,0,0.25)] hover:bg-white/25"
         onClick={() => setOpen((o) => !o)}
         aria-label="Menu"
         aria-expanded={open}
@@ -35,7 +35,7 @@ export function NavLinks({ items, extra }: { items: Item[]; extra: React.ReactNo
         {open ? <X size={22} /> : <Menu size={22} />}
       </button>
       {open && (
-        <div className="xl:hidden absolute left-0 right-0 top-full border-b border-line bg-white shadow-lg">
+        <div className="lg:hidden absolute left-0 right-0 top-full border-b border-line bg-white shadow-lg">
           <nav className="mx-auto flex max-w-7xl flex-col px-4 py-3">
             {items.map((i) => (
               <Link

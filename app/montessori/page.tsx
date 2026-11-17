@@ -52,6 +52,8 @@ export default async function MontessoriHome() {
   return (
     <>
       <section className="hero-bg relative overflow-hidden text-white">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/images/montessori/classroom.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-30 mix-blend-luminosity" />
         <div className="pointer-events-none absolute inset-0">
           {["left-[8%] top-[18%] h-16 w-16 bg-flag-yellow/80", "right-[12%] top-[14%] h-24 w-24 bg-flag-orange/70", "left-[40%] bottom-[10%] h-12 w-12 bg-white/50", "right-[30%] bottom-[18%] h-20 w-20 bg-flag-blue/60"].map((c) => (
             <span key={c} className={`float-3d absolute rounded-full shadow-[inset_-8px_-10px_20px_rgba(0,0,0,0.25),inset_6px_6px_14px_rgba(255,255,255,0.5),0_20px_30px_-10px_rgba(0,0,0,0.4)] ${c}`} />

@@ -15,14 +15,14 @@ export function TodayDana({ entries, lang, compact = false }: { entries: Entry[]
   const find = (date: string, slot: string) => entries.find((e) => e.danaDate === date && e.slot === slot)?.donor;
 
   return (
-    <div className={`grid items-start gap-6 ${compact ? "" : "lg:grid-cols-[1.6fr_1fr]"}`}>
+    <div className={`grid items-start gap-6 ${compact ? "" : "2xl:grid-cols-[1.6fr_1fr]"}`}>
       {days.map((d, idx) => (
         <div key={d.date} className={`${idx === 0 ? "hero-bg tile-3d text-white" : "card"} overflow-hidden ${compact ? "p-5" : "p-6"}`}>
           <p className={`text-xs font-semibold uppercase tracking-[0.2em] ${idx === 0 ? "text-flag-yellow" : "text-accent-2"}`}>
             {idx === 0 ? (si ? "අද දානය" : "Today's Dana") : si ? "හෙට" : "Tomorrow"}
           </p>
           <p className={`font-display text-2xl ${idx === 0 ? "text-3d" : "text-accent"}`}>{d.label}</p>
-          <div className={`mt-4 grid gap-3 ${idx === 0 && !compact ? "sm:grid-cols-3" : ""}`}>
+          <div className={`mt-4 grid gap-3 ${!compact ? "sm:grid-cols-3" : ""}`}>
             {DANA_SLOTS.map((s) => {
               const donor = find(d.date, s.key);
               return (
@@ -38,7 +38,7 @@ export function TodayDana({ entries, lang, compact = false }: { entries: Entry[]
                     {s.emoji} {tr(s.label, lang)}
                   </p>
                   <p className={`text-xs ${idx === 0 ? "text-white/70" : "text-muted"}`}>{s.time}</p>
-                  <p className={`mt-2 ${idx === 0 ? "text-lg" : ""} font-semibold ${donor ? "" : idx === 0 ? "text-white/60" : "text-muted"}`}>
+                  <p className={`mt-2 text-sm font-semibold ${donor ? "" : idx === 0 ? "text-white/60" : "text-muted"}`}>
                     {donor ?? (si ? "දායකත්වය විවෘතයි" : "Open — book this dana")}
                   </p>
                 </div>

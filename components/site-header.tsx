@@ -55,7 +55,8 @@ export async function SiteHeader({ section }: { section: Section }) {
   );
 
   return (
-    <header className="sticky top-0 z-40">
+    <>
+    <header className="relative z-40">
       {/* Temple bar - every page sits under the temple */}
       <div className="bg-[#5e1414] text-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-1.5 text-xs sm:text-sm">
@@ -74,51 +75,63 @@ export async function SiteHeader({ section }: { section: Section }) {
         </div>
       </div>
       <div className="flag-stripe h-1" />
-      <div className="relative border-b border-line bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+
+      {/* Brand row: logo + full name (left) · section switcher (right) */}
+      <div className="border-b border-line bg-white">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
           <Link href={info.base || "/"} className="flex min-w-0 items-center gap-3">
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-accent text-flag-yellow">
-              <DharmaWheel className="h-8 w-8" />
+            <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-gradient-to-br from-accent-2 to-accent text-flag-yellow shadow-[0_5px_0_rgba(0,0,0,0.2),0_12px_20px_-8px_rgba(0,0,0,0.45),inset_0_2px_0_rgba(255,255,255,0.3)]">
+              <DharmaWheel className="wheel-3d h-10 w-10" />
             </span>
             <span className="min-w-0 leading-tight">
-              <span className="block truncate font-display text-lg text-accent sm:text-xl">{tr(info.name, lang)}</span>
-              <span className="block truncate text-xs text-muted">
-                {section === "temple" ? tr(TEMPLE.place, lang) : `${tr(TEMPLE.name, lang)}`}
+              <span className="block font-display text-xl text-accent sm:text-2xl">{tr(info.name, lang)}</span>
+              <span className="block text-xs text-muted sm:text-sm">
+                {section === "temple" ? tr(TEMPLE.place, lang) : `${tr(TEMPLE.name, lang)}, ${tr(TEMPLE.place, lang)}`}
               </span>
             </span>
           </Link>
-          <NavLinks items={items} extra={account} />
+
+          <nav className="flex gap-2 overflow-x-auto pb-1 lg:pb-0" aria-label="Sections">
+            {(["temple", "dhamma", "montessori"] as const).map((s) => {
+              const active = s === section;
+              const Icon = s === "temple" ? Landmark : s === "dhamma" ? BookOpen : Sprout;
+              const label =
+                s === "temple"
+                  ? lang === "si" ? "විහාරය" : "Temple"
+                  : s === "dhamma"
+                    ? lang === "si" ? "දහම් පාසල" : "Dhamma School"
+                    : lang === "si" ? "පෙර පාසල" : "Montessori";
+              return (
+                <Link
+                  key={s}
+                  href={SECTION_INFO[s].base || "/"}
+                  data-section={s}
+                  aria-current={active ? "page" : undefined}
+                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                    active
+                      ? "hero-bg -translate-y-0.5 text-white shadow-[0_4px_0_rgba(0,0,0,0.3),0_10px_18px_-8px_rgba(0,0,0,0.5)]"
+                      : "border border-line bg-white text-ink shadow-[0_3px_0_var(--line)] hover:-translate-y-0.5 hover:text-accent"
+                  }`}
+                >
+                  <Icon size={16} /> {label}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
       </div>
-      {/* Section switcher: Temple / Dhamma School / Montessori */}
-      <div className="border-b border-line bg-paper-2/95 backdrop-blur">
-        <nav className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-2">
-          {(["temple", "dhamma", "montessori"] as const).map((s) => {
-            const active = s === section;
-            const Icon = s === "temple" ? Landmark : s === "dhamma" ? BookOpen : Sprout;
-            const label =
-              s === "temple"
-                ? tr(TEMPLE.name, lang)
-                : s === "dhamma"
-                  ? lang === "si" ? "ඉරිදා දහම් පාසල" : "Sunday Dhamma School"
-                  : lang === "si" ? "උදය ළමා උයන පෙර පාසල" : "Udaya Lama Uyana Montessori";
-            return (
-              <Link
-                key={s}
-                href={SECTION_INFO[s].base || "/"}
-                data-section={s}
-                className={`shrink-0 rounded-xl px-4 py-1.5 text-sm font-semibold transition ${
-                  active
-                    ? "hero-bg -translate-y-0.5 text-white shadow-[0_4px_0_rgba(0,0,0,0.3),0_10px_18px_-8px_rgba(0,0,0,0.5)]"
-                    : "bg-white text-ink shadow-[0_3px_0_var(--line)] hover:-translate-y-0.5 hover:text-accent"
-                }`}
-              >
-                <span className="inline-flex items-center gap-1.5"><Icon size={16} /> {label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
     </header>
+
+    {/* Main nav bar - sticks to the top while scrolling */}
+    <div className="navbar-3d sticky top-0 z-40">
+      <div className="relative mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2.5 lg:justify-center">
+        <Link href={info.base || "/"} className="flex min-w-0 items-center gap-2 text-white lg:hidden">
+          <DharmaWheel className="h-6 w-6 shrink-0 text-flag-yellow" />
+          <span className="truncate font-display">{tr(info.short, lang)}</span>
+        </Link>
+        <NavLinks items={items} extra={account} />
+      </div>
+    </div>
+    </>
   );
 }

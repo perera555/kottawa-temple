@@ -159,11 +159,20 @@ export default async function TempleHome() {
         {/* LEFT: notice board */}
         <aside className="order-2 space-y-4 lg:order-1">
           <SectionTitle title={lang === "si" ? "විහාරස්ථාන නිවේදන" : "Temple Notices"} href="/notices" linkLabel={tr(UI.viewAll, lang)} />
-          <NoticeBoard lang={lang} sections={["temple"]} stacked />
+          <NoticeBoard lang={lang} sections={["temple"]} stacked withActivities />
         </aside>
 
         {/* MIDDLE: main */}
         <div className="order-1 min-w-0 space-y-14 lg:order-2">
+          <section>
+            <SectionTitle
+              title={lang === "si" ? "දෛනික දානය" : "Daily Dana"}
+              sub={lang === "si" ? "උදේ, දවල් සහ හවස දාන දායකයින්" : "Morning, noon and evening dana donors"}
+              href="/dana"
+              linkLabel={lang === "si" ? "මාසයේ ලැයිස්තුව" : "Whole month"}
+            />
+            <TodayDana entries={dailyDana} lang={lang} />
+          </section>
           <section>
             <SectionTitle
               title={lang === "si" ? "පිංකම්" : "Pinkam"}
@@ -190,10 +199,6 @@ export default async function TempleHome() {
 
         {/* RIGHT: daily dana + Dhamma School + Montessori (separate) */}
         <aside className="order-3 space-y-8 lg:col-span-2 xl:col-span-1">
-          <div>
-            <SectionTitle title={lang === "si" ? "දෛනික දානය" : "Daily Dana"} href="/dana" linkLabel={lang === "si" ? "මාසය" : "Month"} />
-            <TodayDana entries={dailyDana} lang={lang} compact />
-          </div>
           <div>
             <SectionTitle title={lang === "si" ? "දහම් පාසල සහ පෙර පාසල" : "Dhamma School & Montessori"} />
             <NoticeBoard lang={lang} sections={["dhamma", "montessori"]} stacked withActivities />

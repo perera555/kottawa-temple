@@ -3,6 +3,7 @@ import { CalendarDays, CalendarRange, Flower2, Images, Mail, MapPin, Megaphone, 
 import { getSession } from "@/lib/auth";
 import { getEvents, getGallery, getMonth, getPosts, getRegistrableEvents, getSchedule, getTestimonials, getVideos } from "@/lib/data";
 import { CalendarView, ProgrammePanel } from "./programme";
+import { MonthTimeline } from "./timeline";
 import { getLang } from "@/lib/lang";
 import { EVENT_CATEGORIES, SECTION_INFO, TEMPLE, tr, UI, VIDEO_CATEGORIES, type Section } from "@/lib/site";
 import { ContactForm, ProgrammeRegistrationForm, ReviewForm } from "./forms";
@@ -100,20 +101,14 @@ export async function ActivitiesPage({ section, category, title }: { section: Se
         <h2 className="mb-5 font-display text-2xl text-accent">{lang === "si" ? "මාසික වැඩසටහන්" : "Monthly Activities"}</h2>
         {months.length ? (
           <>
-            <nav className="mb-6 flex gap-2 overflow-x-auto pb-2">
+            <nav className="mb-8 flex gap-2 overflow-x-auto pb-2">
               {months.map(([m]) => (
-                <a key={m} href={`#m-${m}`} className="btn btn-ghost shrink-0 py-1.5! text-sm">{monthLabel(m)}</a>
+                <a key={m} href={`#m-${m}`} className="nav-3d shrink-0">{monthLabel(m)}</a>
               ))}
             </nav>
-            <div className="space-y-10">
+            <div className="space-y-16">
               {months.map(([m, list]) => (
-                <section key={m} id={`m-${m}`} className="scroll-mt-40">
-                  <h3 className="mb-4 flex items-center gap-3 text-lg font-semibold">
-                    <span className="rounded-xl bg-accent px-3 py-1 text-white shadow-[0_4px_0_rgba(0,0,0,0.25)]">{monthLabel(m)}</span>
-                    <span className="text-sm font-normal text-muted">{list.length} {lang === "si" ? "වැඩසටහන්" : "activities"}</span>
-                  </h3>
-                  <div className="grid gap-5 md:grid-cols-2">{list.map((e) => <EventCard key={e.id} ev={e} lang={lang} />)}</div>
-                </section>
+                <MonthTimeline key={m} id={`m-${m}`} label={monthLabel(m)} events={list} lang={lang} />
               ))}
             </div>
           </>
