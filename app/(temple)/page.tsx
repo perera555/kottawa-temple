@@ -23,6 +23,8 @@ import { CalendarView, ProgrammePanel } from "@/components/programme";
 import { Hero3D } from "@/components/three/hero-3d";
 import { TodayDana } from "@/components/daily-dana";
 import { GalleryShowcase } from "@/components/gallery-showcase";
+import { NoticeBoard } from "@/components/notice-board";
+import { PinkamBoard } from "@/components/pinkam-board";
 import { getDailyDana, getEvents, getGallery, getMonth, getPosts, getRegularEvents, getSchedule, getTestimonials, getUpcomingEvents, getVideos } from "@/lib/data";
 import { getLang } from "@/lib/lang";
 import { SECTION_INFO, TEMPLE, tr, UI } from "@/lib/site";
@@ -53,12 +55,20 @@ export default async function TempleHome() {
     getDailyDana(new Date().toISOString().slice(0, 10), new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10)),
   ]);
 
-  const sectionFeeds = await Promise.all(
-    (["dhamma", "montessori"] as const).map(async (k) => {
-      const [n, up, all] = await Promise.all([getPosts(k, { limit: 3 }), getUpcomingEvents(k, 3), getEvents(k)]);
-      return { k, notices: n, events: up.length ? up : all.slice(0, 3) };
-    })
-  );
+  const pinkam = (await getEvents("temple")).map((e) => ({
+    id: e.id,
+    title: e.title,
+    category: e.category,
+    eventDate: e.eventDate,
+    startTime: e.startTime,
+    endTime: e.endTime,
+    schedule: e.schedule,
+    host: e.host,
+    preacher: e.preacher,
+    preacherFrom: e.preacherFrom,
+    location: e.location,
+    allowRegistration: e.allowRegistration,
+  }));
 
   const services = [
     { icon: HandHeart, title: { en: "Dana", si: "දාන" }, text: { en: "Offer alms to the Maha Sangha - book your date online.", si: "මහා සංඝරත්නයට දානය පූජා කිරීමට දිනයක් වෙන්කරගන්න." }, href: "/dana" },
@@ -144,131 +154,51 @@ export default async function TempleHome() {
         </div>
       </Container>
 
-      {/* MAIN: notices (left) + daily dana (right) */}
-      <Container className="grid gap-10 pt-16 lg:grid-cols-[1fr_380px]">
-        <div className="min-w-0 space-y-14">
-          {/* Temple notices - the main section */}
+      {/* THREE COLUMNS: notices (left) · pinkam (middle) · daily dana (right) */}
+      <Container className="grid gap-8 pt-16 lg:grid-cols-[300px_1fr] xl:grid-cols-[300px_1fr_340px] max-w-[1500px]!">
+        {/* LEFT: notice board */}
+        <aside className="order-2 space-y-4 lg:order-1">
+          <SectionTitle title={lang === "si" ? "විහාරස්ථාන නිවේදන" : "Temple Notices"} href="/notices" linkLabel={tr(UI.viewAll, lang)} />
+          <NoticeBoard lang={lang} sections={["temple"]} stacked />
+        </aside>
+
+        {/* MIDDLE: main */}
+        <div className="order-1 min-w-0 space-y-14 lg:order-2">
           <section>
-            <SectionTitle title={lang === "si" ? "විහාරස්ථාන නිවේදන" : "Temple Notices"} href="/notices" linkLabel={tr(UI.viewAll, lang)} />
-            {notices.length ? (
-              <div className="grid gap-5 md:grid-cols-2">{notices.map((p) => <PostCard key={p.id} post={p} lang={lang} />)}</div>
-            ) : (
-              <p className="text-muted">{tr(UI.noItems, lang)}</p>
-            )}
+            <SectionTitle
+              title={lang === "si" ? "පිංකම්" : "Pinkam"}
+              sub={lang === "si" ? "දාන, පිරිත්, බෝධි පූජා, පොහොය සිල් සහ බණ" : "Dana, Pirith, Bodhi Puja, Poya Sil and Bana"}
+              href="/activities"
+              linkLabel={tr(UI.viewAll, lang)}
+            />
+            <PinkamBoard items={pinkam} lang={lang} />
           </section>
-
-          {/* Dhamma School + Montessori - separate panels */}
           <section>
-            <SectionTitle title={tr(UI.ourSections, lang)} sub={lang === "si" ? "දහම් පාසල සහ පෙර පාසලේ නිවේදන හා ක්‍රියාකාරකම්" : "Notices and activities from our Dhamma School and Montessori"} />
-            <div className="grid gap-8">
-          <div className="grid gap-8">
-            {sectionFeeds.map(({ k, notices: sn, events: se }) => {
-              const s = SECTION_INFO[k];
-              return (
-                <div key={k} data-section={k} className="tile-3d hero-bg group relative overflow-hidden p-6 text-white sm:p-8">
-                  <DharmaWheel className="absolute -right-10 -top-10 h-48 w-48 text-white/10 transition duration-700 group-hover:rotate-90" />
-                  <p className="text-sm uppercase tracking-[0.2em] text-flag-yellow">{tr(s.short, lang)}</p>
-                  <h3 className="text-3d mt-1 font-display text-3xl">{tr(s.name, lang)}</h3>
-                  <p className="mt-2 max-w-md text-white/85">{tr(s.tagline, lang)}</p>
-
-                  <div className="relative mt-6 grid gap-4 sm:grid-cols-2">
-                    <div className="rounded-2xl bg-white/12 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] backdrop-blur">
-                      <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-flag-yellow">
-                        <Megaphone size={14} /> {tr(UI.latestNotices, lang)}
-                      </p>
-                      {sn.length ? (
-                        <ul className="space-y-2 text-sm">
-                          {sn.map((p) => (
-                            <li key={p.id}>
-                              <Link href={`${s.base}/notices`} className="block rounded-lg px-2 py-1.5 hover:bg-white/10">
-                                <span className="line-clamp-2 font-medium">{p.title}</span>
-                                <span className="text-xs text-white/60">{p.publishedAt}</span>
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="text-sm text-white/60">{tr(UI.noItems, lang)}</p>
-                      )}
-                    </div>
-                    <div className="rounded-2xl bg-white/12 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] backdrop-blur">
-                      <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-flag-yellow">
-                        <CalendarDays size={14} /> {lang === "si" ? "ක්‍රියාකාරකම්" : "Activities"}
-                      </p>
-                      {se.length ? (
-                        <ul className="space-y-2 text-sm">
-                          {se.map((e) => (
-                            <li key={e.id}>
-                              <Link href={`${s.base}/activities`} className="flex gap-2 rounded-lg px-2 py-1.5 hover:bg-white/10">
-                                <span className="w-12 shrink-0 text-xs font-bold text-flag-yellow">
-                                  {e.eventDate ? new Date(e.eventDate + "T00:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : "↻"}
-                                </span>
-                                <span className="line-clamp-2 font-medium">{e.title}</span>
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="text-sm text-white/60">{tr(UI.noItems, lang)}</p>
-                      )}
-                    </div>
-                  </div>
-                  <Link href={s.base} className="btn btn-gold relative mt-6">{tr(UI.visit, lang)} {tr(s.short, lang)} →</Link>
-                </div>
-              );
-            })}
-          </div>
-            </div>
+            <SectionTitle
+              title={lang === "si" ? "පිංකම් සටහන" : "Programme Schedule"}
+              sub={lang === "si" ? "දායකත්වය, ධර්ම දේශනාව සහ වේලාව" : "Who hosts, who preaches, and when"}
+              href="/calendar"
+              linkLabel={tr(UI.viewAll, lang)}
+            />
+            <ProgrammePanel rows={schedule} lang={lang} registerHref="/sil" />
+          </section>
+          <section>
+            <SectionTitle title={lang === "si" ? "දින දර්ශනය" : "Calendar"} href="/calendar" linkLabel={lang === "si" ? "විශාලව බලන්න" : "Full calendar"} />
+            <CalendarView month={thisMonth} items={monthItems} lang={lang} baseHref="/calendar" />
           </section>
         </div>
 
-        {/* RIGHT SIDEBAR */}
-        <aside className="space-y-8 lg:sticky lg:top-44 lg:self-start">
+        {/* RIGHT: daily dana + Dhamma School + Montessori (separate) */}
+        <aside className="order-3 space-y-8 lg:col-span-2 xl:col-span-1">
           <div>
             <SectionTitle title={lang === "si" ? "දෛනික දානය" : "Daily Dana"} href="/dana" linkLabel={lang === "si" ? "මාසය" : "Month"} />
             <TodayDana entries={dailyDana} lang={lang} compact />
           </div>
           <div>
-            <SectionTitle title={tr(UI.upcoming, lang)} href="/activities" linkLabel={tr(UI.viewAll, lang)} />
-            <div className="space-y-3">
-              {(upcoming.length ? upcoming : regular).slice(0, 3).map((e) => (
-                <Link key={e.id} href="/activities" className="card flex items-center gap-3 p-3">
-                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-accent text-center leading-none text-white shadow-[0_3px_0_rgba(0,0,0,0.25)]">
-                    {e.eventDate ? (
-                      <span>
-                        <span className="block text-lg font-bold">{new Date(e.eventDate + "T00:00:00").getDate()}</span>
-                        <span className="text-[10px] uppercase">{new Date(e.eventDate + "T00:00:00").toLocaleDateString("en-GB", { month: "short" })}</span>
-                      </span>
-                    ) : (
-                      <CalendarDays size={20} />
-                    )}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="line-clamp-2 text-sm font-semibold">{e.title}</span>
-                    <span className="text-xs text-muted">{e.startTime || e.schedule}</span>
-                  </span>
-                </Link>
-              ))}
-            </div>
+            <SectionTitle title={lang === "si" ? "දහම් පාසල සහ පෙර පාසල" : "Dhamma School & Montessori"} />
+            <NoticeBoard lang={lang} sections={["dhamma", "montessori"]} stacked withActivities />
           </div>
         </aside>
-      </Container>
-
-      {/* PROGRAMME PANEL + CALENDAR */}
-      <Container className="grid gap-10 pt-16 xl:grid-cols-[1.4fr_1fr]">
-        <section>
-          <SectionTitle
-            title={lang === "si" ? "පිංකම් සටහන" : "Programme Schedule"}
-            sub={lang === "si" ? "දානය, පොහොය සිල්, බෝධි පූජා සහ ධර්ම දේශනා" : "Dana hosts, Poya sil, Bodhi puja and Bana — who, when and where"}
-            href="/calendar"
-            linkLabel={tr(UI.viewAll, lang)}
-          />
-          <ProgrammePanel rows={schedule} lang={lang} registerHref="/sil" />
-        </section>
-        <section>
-          <SectionTitle title={lang === "si" ? "දින දර්ශනය" : "Calendar"} href="/calendar" linkLabel={lang === "si" ? "විශාලව බලන්න" : "Full calendar"} />
-          <CalendarView month={thisMonth} items={monthItems} lang={lang} baseHref="/calendar" />
-        </section>
       </Container>
 
       {/* VIDEOS */}
@@ -276,14 +206,6 @@ export default async function TempleHome() {
         <Container className="py-16">
           <SectionTitle title={lang === "si" ? "වීඩියෝ" : "Videos"} sub={lang === "si" ? "කඨින, බෝධි පූජා, බණ" : "Katina, Bodhi Puja, Bana"} href="/videos" linkLabel={tr(UI.viewAll, lang)} />
           <div className="grid gap-6 md:grid-cols-3">{videos.map((v) => <VideoCard key={v.id} v={v} lang={lang} />)}</div>
-        </Container>
-      )}
-
-      {/* ADS */}
-      {ads.length > 0 && (
-        <Container className="pb-16">
-          <SectionTitle title={tr(UI.advertisements, lang)} />
-          <div className="grid gap-6 md:grid-cols-2">{ads.map((p) => <PostCard key={p.id} post={p} lang={lang} />)}</div>
         </Container>
       )}
 

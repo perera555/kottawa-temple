@@ -342,3 +342,35 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .feature-3d, .feature-3d:hover { transform: none; }
 }
+/* ---------- 3D nav buttons ---------- */
+.nav-3d {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  border-radius: 0.8rem;
+  padding: 0.45rem 0.8rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: linear-gradient(180deg, #ffffff, #f6ecdb);
+  border: 1px solid var(--line);
+  box-shadow: inset 0 1px 0 #fff, 0 3px 0 var(--line), 0 6px 10px -6px rgb(60 30 10 / 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, color 0.15s ease, background 0.2s ease;
+}
+.nav-3d:hover {
+  color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 #fff, 0 5px 0 color-mix(in srgb, var(--accent) 35%, var(--line)), 0 12px 16px -8px rgb(60 30 10 / 0.4);
+}
+.nav-3d:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 1px 0 #fff, 0 1px 0 var(--line);
+}
+.nav-3d-active,
+.nav-3d-active:hover {
+  color: white;
+  border-color: transparent;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent-2) 55%, var(--accent)) 0%, var(--accent) 100%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35), 0 4px 0 color-mix(in srgb, var(--accent) 55%, black), 0 12px 18px -8px color-mix(in srgb, var(--accent) 70%, transparent);
+  transform: translateY(-2px);
+}

@@ -15,14 +15,12 @@ export function NavLinks({ items, extra }: { items: Item[]; extra: React.ReactNo
 
   return (
     <>
-      <nav className="hidden xl:flex items-center gap-1">
+      <nav className="hidden xl:flex items-center gap-1.5">
         {items.map((i) => (
           <Link
             key={i.href}
             href={i.href}
-            className={`rounded-full px-2.5 py-2 text-sm font-medium whitespace-nowrap transition ${
-              isActive(i.href) ? "bg-accent text-white" : "text-ink hover:bg-accent-soft hover:text-accent"
-            }`}
+            className={`nav-3d ${isActive(i.href) ? "nav-3d-active" : ""}`}
           >
             {i.label}
           </Link>
@@ -44,7 +42,7 @@ export function NavLinks({ items, extra }: { items: Item[]; extra: React.ReactNo
                 key={i.href}
                 href={i.href}
                 onClick={() => setOpen(false)}
-                className={`rounded-lg px-3 py-2.5 font-medium ${isActive(i.href) ? "bg-accent-soft text-accent" : "text-ink"}`}
+                className={`nav-3d my-0.5 justify-start ${isActive(i.href) ? "nav-3d-active" : ""}`}
               >
                 {i.label}
               </Link>

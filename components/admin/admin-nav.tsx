@@ -4,8 +4,10 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
   CalendarDays,
+  CalendarPlus,
   ClipboardList,
   GraduationCap,
+  Utensils,
   HandHeart,
   Images,
   LayoutDashboard,
@@ -30,6 +32,8 @@ const ICONS: Record<string, React.ComponentType<{ size?: number }>> = {
   messages: Mail,
   dana: HandHeart,
   registrations: ClipboardList,
+  "daily-dana": Utensils,
+  monthly: CalendarPlus,
   users: Users,
 };
 
