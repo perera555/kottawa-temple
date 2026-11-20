@@ -70,6 +70,14 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         <div className="sticky top-0 z-30 space-y-3 bg-paper/90 p-4 pb-3 backdrop-blur sm:px-8">
           <div className="hero-bg tile-3d flex items-center justify-between gap-4 px-5 py-3 text-white">
             <span className="text-3d truncate font-display text-lg">Sri Punyabhiwardhanaramaya, Kottawa</span>
+            <span className="flex items-center gap-2">
+              <Link href="/admin/guide" className="rounded-full bg-white/15 px-3 py-1 text-sm font-semibold text-flag-yellow shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] hover:bg-white/25">
+                📖 Admin Guide / උපදෙස්
+              </Link>
+              <Link href="/guide" className="hidden rounded-full bg-white/10 px-3 py-1 text-sm hover:bg-white/20 sm:inline-block">
+                User Guide
+              </Link>
+            </span>
             <UserMenu name={profile?.name ?? user.name} avatarUrl={profile?.avatarUrl ?? ""} memberNo={profile?.memberNo ?? null} isAdmin />
           </div>
           <Suspense>

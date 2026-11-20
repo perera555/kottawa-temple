@@ -68,6 +68,14 @@ export async function SiteHeader({ section }: { section: Section }) {
             </span>
           </Link>
           <div className="flex items-center gap-4">
+            <Link href="/guide" className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-0.5 font-semibold text-flag-yellow hover:bg-white/20">
+              📖 {lang === "si" ? "උපදෙස්" : "Guide"}
+            </Link>
+            {user && isAdminRole(user.role) && (
+              <Link href="/admin/guide" className="hidden items-center gap-1 rounded-full bg-white/10 px-2.5 py-0.5 font-semibold hover:bg-white/20 md:inline-flex">
+                🛠 {lang === "si" ? "පරිපාලක උපදෙස්" : "Admin Guide"}
+              </Link>
+            )}
             <div className={`${user ? "flex" : "hidden sm:flex"} items-center gap-4`}>
               {accountLinks("inline-flex items-center gap-1 hover:text-flag-yellow")}
             </div>

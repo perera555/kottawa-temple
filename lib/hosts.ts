@@ -23,7 +23,7 @@ export function sectionForHost(host: string | null): Section | null {
 export const SECTION_BASE: Record<Section, string> = { temple: "", dhamma: "/dhamma-school", montessori: "/montessori" };
 
 /** Paths shared by every site (accounts, admin, assets). Never rewritten. */
-export const SHARED_PREFIXES = ["/admin", "/account", "/login", "/register", "/forgot-password", "/reset-password", "/images", "/uploads", "/api", "/_next"];
+export const SHARED_PREFIXES = ["/admin", "/account", "/login", "/register", "/forgot-password", "/reset-password", "/guide", "/images", "/uploads", "/api", "/_next"];
 
 /** Link to a section's home, absolute when that section has its own address. */
 export function sectionHomeUrl(section: Section) {
