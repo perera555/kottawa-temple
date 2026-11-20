@@ -1,13 +1,15 @@
 export function DharmaWheel({ className = "", spokes = 24 }: { className?: string; spokes?: number }) {
+  // Round so server and browser render identical numbers (avoids hydration warnings)
+  const r = (n: number) => Math.round(n * 1000) / 1000;
   const lines = Array.from({ length: spokes }, (_, i) => {
     const a = (i * 2 * Math.PI) / spokes;
     return (
       <line
         key={i}
-        x1={50 + 12 * Math.cos(a)}
-        y1={50 + 12 * Math.sin(a)}
-        x2={50 + 40 * Math.cos(a)}
-        y2={50 + 40 * Math.sin(a)}
+        x1={r(50 + 12 * Math.cos(a))}
+        y1={r(50 + 12 * Math.sin(a))}
+        x2={r(50 + 40 * Math.cos(a))}
+        y2={r(50 + 40 * Math.sin(a))}
         strokeWidth="2.2"
         strokeLinecap="round"
       />
