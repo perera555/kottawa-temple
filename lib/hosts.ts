@@ -7,8 +7,11 @@
  */
 import type { Section } from "./site";
 
+/** Remove whitespace and invisible characters (BOM / zero-width) from env values. */
+const clean = (v?: string) => (v ?? "").replace(/[﻿​-‍]/g, "").trim();
+
 const list = (v?: string) =>
-  (v ?? "")
+  clean(v)
     .split(",")
     .map((s) => s.trim().toLowerCase())
     .filter(Boolean);
@@ -27,6 +30,7 @@ export const SHARED_PREFIXES = ["/admin", "/account", "/login", "/register", "/f
 
 /** Link to a section's home, absolute when that section has its own address. */
 export function sectionHomeUrl(section: Section) {
-  const env = { temple: process.env.TEMPLE_URL, dhamma: process.env.DHAMMA_URL, montessori: process.env.MONTESSORI_URL }[section];
-  return env || SECTION_BASE[section] || "/";
+  const env = clean({ temple: process.env.TEMPLE_URL, dhamma: process.env.DHAMMA_URL, montessori: process.env.MONTESSORI_URL }[section]);
+  // only use absolute links that are real http(s) URLs
+  return /^https?:\/\//.test(env) ? env.replace(/\/$/, "") : SECTION_BASE[section] || "/";
 }
