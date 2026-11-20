@@ -21,11 +21,12 @@ const STATUS: Record<string, string> = {
 export default async function AccountPage() {
   await connection();
   const session = await requireUser();
-  const [[user], bookings, msgs, reviews] = await Promise.all([
+  const [[user], bookings, msgs, reviews, apps] = await Promise.all([
     db.select().from(schema.users).where(eq(schema.users.id, session.id)).limit(1),
     db.select().from(schema.danaBookings).where(eq(schema.danaBookings.userId, session.id)).orderBy(desc(schema.danaBookings.danaDate)),
     db.select().from(schema.messages).where(eq(schema.messages.userId, session.id)).orderBy(desc(schema.messages.createdAt)),
     db.select().from(schema.testimonials).where(eq(schema.testimonials.userId, session.id)).orderBy(desc(schema.testimonials.createdAt)),
+    db.select().from(schema.applications).where(eq(schema.applications.userId, session.id)).orderBy(desc(schema.applications.createdAt)),
   ]);
   if (!user) return <Container className="py-16">Account not found.</Container>;
 
@@ -70,6 +71,28 @@ export default async function AccountPage() {
             <p className="text-sm text-muted">No bookings yet. <Link href="/dana" className="text-accent underline">Book a dana</Link></p>
           )}
         </section>
+
+        {apps.length > 0 && (
+          <section className="card card-flat p-6 lg:col-span-2">
+            <h2 className="mb-4 font-display text-2xl text-accent">My Admission Applications</h2>
+            <ul className="divide-y divide-line">
+              {apps.map((a) => (
+                <li key={a.id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
+                  <span>
+                    <span className="block font-semibold">{a.childName}</span>
+                    <span className="text-muted">{SECTION_INFO[a.section as Section]?.short.en} · {a.grade} · applied {fmtDate(a.createdAt)}</span>
+                  </span>
+                  <span className="flex items-center gap-2">
+                    {a.admissionNo && <span className="font-mono text-xs">{a.admissionNo}</span>}
+                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${a.status === "accepted" ? "bg-green-100 text-green-800" : a.status === "rejected" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}`}>
+                      {a.status === "waiting" ? "waiting list" : a.status}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         <section className="card card-flat p-6">
           <h2 className="mb-4 font-display text-2xl text-accent">My Profile</h2>

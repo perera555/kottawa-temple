@@ -39,6 +39,7 @@ export default async function DhammaHome() {
           <p className="mt-2 text-white/70">{si ? "සෑම ඉරිදාවකම පෙ.ව. 7.30 සිට ප.ව. 12.00 දක්වා" : "Every Sunday, 7.30 a.m. – 12.00 noon"}</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/dhamma-school/notices" className="btn btn-gold"><Megaphone size={18} /> {si ? "නිවේදන" : "Notices"}</Link>
+            <Link href="/dhamma-school/admission" className="btn btn-ghost">{si ? "ඇතුළත් වන්න" : "Apply now"}</Link>
             <Link href="/dhamma-school/activities" className="btn btn-ghost">{si ? "ක්‍රියාකාරකම්" : "Activities"}</Link>
           </div>
         </Container>

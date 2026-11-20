@@ -1,0 +1,1 @@
+ALTER TABLE "section_settings" ADD COLUMN "teacher_whatsapp" text DEFAULT '' NOT NULL;

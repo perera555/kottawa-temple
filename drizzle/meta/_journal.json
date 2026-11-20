@@ -36,6 +36,20 @@
       "when": 1795154962454,
       "tag": "0004_section_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795155610330,
+      "tag": "0005_applications",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795155685392,
+      "tag": "0006_teacher_whatsapp",
+      "breakpoints": true
     }
   ]
 }

@@ -84,6 +84,54 @@ export async function registerForProgramme(_: FormState, fd: FormData): Promise<
   return { ok: true, message: `Registered for "${ev.title}". See you there! / ලියාපදිංචිය සාර්ථකයි.` };
 }
 
+/** Online student registration for the Dhamma School / Montessori. */
+export async function submitApplication(_: FormState, fd: FormData): Promise<FormState> {
+  if (str(fd, "website")) return { ok: true };
+  const sec = str(fd, "section");
+  if (sec !== "dhamma" && sec !== "montessori") return { error: "Unknown school." };
+  const childName = str(fd, "childName", 150);
+  const parentName = str(fd, "parentName", 150);
+  const phone = str(fd, "phone", 40);
+  const dob = str(fd, "dateOfBirth", 10);
+  if (!childName || !parentName || !phone) return { error: "Please enter the child's name, parent's name and phone number." };
+  if (dob && !/^\d{4}-\d{2}-\d{2}$/.test(dob)) return { error: "Please check the date of birth." };
+  if (fd.get("consent") !== "on") return { error: "Please confirm the details are correct." };
+
+  let photoUrl = "";
+  const photo = fd.get("photo");
+  if (photo instanceof File && photo.size > 0) {
+    try {
+      photoUrl = await saveImage(photo, "applications");
+    } catch (e) {
+      return { error: (e as Error).message };
+    }
+  }
+  const session = await getSession();
+  const [row] = await db
+    .insert(schema.applications)
+    .values({
+      section: sec,
+      userId: session?.id ?? null,
+      childName,
+      dateOfBirth: dob || null,
+      gender: str(fd, "gender", 10),
+      grade: str(fd, "grade", 60),
+      schoolName: str(fd, "schoolName", 150),
+      parentName,
+      relationship: str(fd, "relationship", 40),
+      phone,
+      email: str(fd, "email", 200),
+      address: str(fd, "address", 300),
+      notes: str(fd, "notes", 1000),
+      photoUrl,
+    })
+    .returning({ id: schema.applications.id });
+  return {
+    ok: true,
+    message: `Application #${row.id} received. The ${sec === "dhamma" ? "Dhamma School" : "pre school"} will contact you soon. / ඔබගේ අයදුම්පත ලැබුණා. ඉක්මනින් අමතනු ඇත.`,
+  };
+}
+
 export async function submitTestimonial(_: FormState, fd: FormData): Promise<FormState> {
   if (str(fd, "website")) return { ok: true };
   const name = str(fd, "name", 120);

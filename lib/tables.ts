@@ -9,6 +9,7 @@ export const TABLES = {
   videos: schema.videos,
   teachers: schema.teachers,
   students: schema.students,
+  applications: schema.applications,
   leaders: schema.leaders,
   testimonials: schema.testimonials,
   messages: schema.messages,

@@ -66,7 +66,7 @@ export default async function MontessoriHome() {
           <h1 className="text-3d mt-3 font-display text-4xl sm:text-6xl">🌱 {tr(info.name, lang)}</h1>
           <p className="mt-4 text-lg text-white/90">{tr(info.tagline, lang)}</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link href="/montessori/contact" className="btn btn-gold">{si ? "ඇතුළත් කිරීම් විමසන්න" : "Ask about admissions"}</Link>
+            <Link href="/montessori/admission" className="btn btn-gold">{si ? "ඔන්ලයින් ඇතුළත් වන්න" : "Apply online"}</Link>
             <Link href="/montessori/about" className="btn btn-ghost">{si ? "අප ගැන" : "About us"}</Link>
           </div>
         </Container>

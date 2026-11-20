@@ -1,0 +1,20 @@
+CREATE TABLE "applications" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"section" text NOT NULL,
+	"user_id" integer,
+	"child_name" text NOT NULL,
+	"date_of_birth" date,
+	"gender" text DEFAULT '' NOT NULL,
+	"grade" text DEFAULT '' NOT NULL,
+	"school_name" text DEFAULT '' NOT NULL,
+	"parent_name" text NOT NULL,
+	"relationship" text DEFAULT '' NOT NULL,
+	"phone" text NOT NULL,
+	"email" text DEFAULT '' NOT NULL,
+	"address" text DEFAULT '' NOT NULL,
+	"notes" text DEFAULT '' NOT NULL,
+	"photo_url" text DEFAULT '' NOT NULL,
+	"status" text DEFAULT 'pending' NOT NULL,
+	"admission_no" text DEFAULT '' NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL
+);

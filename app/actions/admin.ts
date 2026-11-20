@@ -153,9 +153,11 @@ export async function saveRecord(
       if (!existing || !canManage(user, (existing as any).section)) return { error: "Not found." };
     }
     await db.update(table).set(values).where(eq(table.id, id));
+    if (key === "applications") await acceptApplication(id);
   } else {
     const [row] = await db.insert(table).values(values).returning();
     if (key === "users" && !values.memberNo) await assignMemberNo((row as any).id);
+    if (key === "applications") await acceptApplication((row as any).id);
   }
 
   revalidateSite();
@@ -187,12 +189,14 @@ export async function quickUpdate(key: string, id: number, field: string, value:
     messages: ["isRead"],
     posts: ["pinned"],
     students: ["showOnWebsite"],
+    applications: ["status"],
   };
   if (!allowed[key]?.includes(field)) throw new Error("Not allowed");
   const table = TABLES[key] as any;
   const [existing] = await db.select().from(table).where(eq(table.id, id)).limit(1);
   if (!existing || !canManage(user, (existing as any).section)) throw new Error("Not found.");
   await db.update(table).set({ [field]: value }).where(eq(table.id, id));
+  if (key === "applications") await acceptApplication(id);
   revalidateSite();
 }
 
@@ -281,6 +285,47 @@ async function resolveYoutubeChannelId(url: string): Promise<string | null> {
   }
 }
 
+/**
+ * When an application is accepted, create the student (once) with an admission
+ * number like DS-2026-001 (Dhamma School) or MT-2026-001 (Montessori).
+ */
+async function acceptApplication(id: number) {
+  const [app] = await db.select().from(schema.applications).where(eq(schema.applications.id, id)).limit(1);
+  if (!app || app.status !== "accepted") return;
+  const existing = await db
+    .select({ id: schema.students.id })
+    .from(schema.students)
+    .where(and(eq(schema.students.section, app.section), eq(schema.students.name, app.childName), eq(schema.students.guardianName, app.parentName)))
+    .limit(1);
+  if (existing.length && app.admissionNo) return;
+
+  let admissionNo = app.admissionNo;
+  if (!admissionNo) {
+    const prefix = `${app.section === "dhamma" ? "DS" : "MT"}-${new Date().getFullYear()}-`;
+    const rows = await db
+      .select({ no: schema.students.admissionNo })
+      .from(schema.students)
+      .where(and(eq(schema.students.section, app.section), sql`${schema.students.admissionNo} like ${prefix + "%"}`));
+    const next = rows.reduce((m, r) => Math.max(m, Number(r.no.slice(prefix.length)) || 0), 0) + 1;
+    admissionNo = prefix + String(next).padStart(3, "0");
+  }
+  const age = app.dateOfBirth ? Math.floor((Date.now() - new Date(app.dateOfBirth).getTime()) / (365.25 * 86400000)) : null;
+  if (!existing.length) {
+    await db.insert(schema.students).values({
+      section: app.section,
+      admissionNo,
+      name: app.childName,
+      grade: app.grade,
+      age,
+      guardianName: app.parentName,
+      contact: app.phone,
+      imageUrl: app.photoUrl,
+      active: true,
+    });
+  }
+  await db.update(schema.applications).set({ admissionNo }).where(eq(schema.applications.id, id));
+}
+
 /** One-click Go Live / End Live from the dashboard. */
 export async function setLive(section: string, _prev: FormState, fd: FormData): Promise<FormState> {
   const user = await getSession();
@@ -313,6 +358,7 @@ export async function saveSettings(section: string, _prev: FormState, fd: FormDa
     phone: s("phone", 60),
     email: s("email", 200),
     whatsapp: s("whatsapp", 40),
+    teacherWhatsapp: s("teacherWhatsapp", 40),
     address: s("address", 300),
     mapQuery: s("mapQuery", 300),
     facebookUrl: url("facebookUrl"),

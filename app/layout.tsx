@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Marcellus, Noto_Sans_Sinhala, Noto_Serif_Sinhala } from "next/font/google";
+import { SinglishKeyboard } from "@/components/singlish-keyboard";
 import { TiltEffect } from "@/components/tilt-effect";
 import "./globals.css";
 
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         {children}
         <TiltEffect />
+        <SinglishKeyboard />
       </body>
     </html>
   );

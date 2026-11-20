@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { CalendarDays, CalendarRange, Flower2, Images, Mail, MapPin, Megaphone, Phone, PlayCircle, Radio, Star } from "lucide-react";
+import { CalendarDays, CalendarRange, Flower2, Images, Mail, MapPin, Megaphone, Phone, PlayCircle, Radio, Star, GraduationCap } from "lucide-react";
 import { getSession } from "@/lib/auth";
 import { getEvents, getGallery, getMonth, getPosts, getRegistrableEvents, getSchedule, getTestimonials, getVideos } from "@/lib/data";
 import { CalendarView, ProgrammePanel } from "./programme";
 import { MonthTimeline } from "./timeline";
 import { LiveBanner, LivePlayer, SocialButtons, SocialFeed } from "./social";
+import { AdmissionForm } from "./admission-form";
 import { getSettings } from "@/lib/settings";
 import { getLang } from "@/lib/lang";
 import { EVENT_CATEGORIES, SECTION_INFO, TEMPLE, tr, UI, VIDEO_CATEGORIES, type Section } from "@/lib/site";
@@ -24,6 +25,59 @@ export async function SectionShell({ section, children }: { section: Section; ch
       <main className="flex-1">{children}</main>
       <SiteFooter section={section} />
     </div>
+  );
+}
+
+export async function AdmissionPage({ section }: { section: "dhamma" | "montessori" }) {
+  const [lang, st, user] = await Promise.all([getLang(), getSettings(section), getSession()]);
+  const si = lang === "si";
+  const info = SECTION_INFO[section];
+  const contacts = [
+    st.whatsapp && { label: si ? "විදුහල්පති" : "Principal", number: st.whatsapp },
+    st.teacherWhatsapp && { label: si ? "ගුරුවරිය" : "Teacher", number: st.teacherWhatsapp },
+  ].filter(Boolean) as { label: string; number: string }[];
+  const grades =
+    section === "montessori"
+      ? ["Nursery (3 years)", "Lower KG (4 years)", "Upper KG (5 years)"]
+      : [...Array.from({ length: 11 }, (_, i) => `Grade ${i + 1}`), "Daham Sarasavi"];
+  return (
+    <>
+      <PageHero
+        eyebrow={tr(info.name, lang)}
+        title={si ? "ඔන්ලයින් ඇතුළත් වීම" : "Online Admission"}
+        subtitle={si ? "ඔබගේ දරුවා ලියාපදිංචි කිරීමට පහත පෝරමය පුරවන්න" : "Fill in the form below to register your child"}
+        icon={GraduationCap}
+      />
+      <Container className="grid gap-10 py-12 lg:grid-cols-[1fr_340px]">
+        <div className="card card-flat p-6 sm:p-8">
+          <AdmissionForm
+            section={section}
+            schoolName={info.name.en}
+            lang={lang}
+            contacts={contacts}
+            gradeOptions={grades}
+            defaults={user ? { parentName: user.name, email: user.email } : undefined}
+          />
+        </div>
+        <aside className="space-y-5">
+          <div className="hero-bg tile-3d p-6 text-white">
+            <h2 className="text-3d font-display text-2xl">{si ? "ක්‍රියාවලිය" : "How it works"}</h2>
+            <ol className="mt-3 space-y-3 text-sm text-white/90">
+              <li>1. {si ? "පෝරමය යවන්න" : "Send the form (or WhatsApp us)"}</li>
+              <li>2. {si ? "අපි ඔබව අමතන්නෙමු" : "We call you to confirm"}</li>
+              <li>3. {si ? "ඇතුළත් වීමේ අංකය ලැබේ" : "You receive an admission number"}</li>
+            </ol>
+          </div>
+          <div className="card card-flat p-5 text-sm">
+            <p className="font-semibold">{si ? "විමසීම්" : "Questions?"}</p>
+            <p className="mt-1 text-muted">{st.phone}</p>
+            {user ? (
+              <p className="mt-2 text-xs text-muted">{si ? "ඔබගේ අයදුම්පතේ තත්ත්වය මගේ ගිණුමේ බලන්න." : "Track your application in My Account."}</p>
+            ) : null}
+          </div>
+        </aside>
+      </Container>
+    </>
   );
 }
 

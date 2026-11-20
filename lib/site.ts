@@ -62,6 +62,7 @@ export const SECTION_INFO: Record<Section, SectionInfo> = {
       { href: "/dhamma-school", label: { en: "Home", si: "මුල් පිටුව" } },
       { href: "/dhamma-school/about", label: { en: "About", si: "පාසල ගැන" } },
       { href: "/dhamma-school/teachers", label: { en: "Teachers", si: "ගුරු මණ්ඩලය" } },
+      { href: "/dhamma-school/admission", label: { en: "Admission", si: "ඇතුළත් වීම" } },
       { href: "/dhamma-school/students", label: { en: "Students", si: "සිසුන්" } },
       { href: "/dhamma-school/prefects", label: { en: "Prefects & Monitors", si: "ශිෂ්‍ය නායක මණ්ඩලය" } },
       { href: "/dhamma-school/activities", label: { en: "Activities", si: "ක්‍රියාකාරකම්" } },
@@ -82,6 +83,7 @@ export const SECTION_INFO: Record<Section, SectionInfo> = {
     nav: [
       { href: "/montessori", label: { en: "Home", si: "මුල් පිටුව" } },
       { href: "/montessori/about", label: { en: "About & Teachers", si: "අප ගැන" } },
+      { href: "/montessori/admission", label: { en: "Admission", si: "ඇතුළත් වීම" } },
       { href: "/montessori/activities", label: { en: "Activities", si: "ක්‍රියාකාරකම්" } },
       { href: "/montessori/calendar", label: { en: "Calendar", si: "දින දර්ශනය" } },
       { href: "/montessori/live", label: { en: "🔴 Live", si: "🔴 සජීවී" } },

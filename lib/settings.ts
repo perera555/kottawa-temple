@@ -11,6 +11,7 @@ const DEFAULTS = (section: Section): SectionSettings => ({
   phone: TEMPLE.phone,
   email: TEMPLE.email,
   whatsapp: "",
+  teacherWhatsapp: "",
   address: TEMPLE.address.en,
   mapQuery: "Sri Punyabhiwardhanaramaya Kottawa",
   facebookUrl: "",

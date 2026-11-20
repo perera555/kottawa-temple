@@ -4,5 +4,6 @@ import type { Lang } from "./site";
 
 export async function getLang(): Promise<Lang> {
   const c = await cookies();
-  return c.get("lang")?.value === "si" ? "si" : "en";
+  // Sinhala first; English only when chosen
+  return c.get("lang")?.value === "en" ? "en" : "si";
 }

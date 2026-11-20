@@ -63,7 +63,8 @@ export function SettingsForm({ section, values }: { section: string; values: Val
         <h2 className="mb-4 font-display text-2xl text-accent">Contact details</h2>
         <div className="grid gap-4 md:grid-cols-2">
           <F name="phone" label="Phone" values={values} />
-          <F name="whatsapp" label="WhatsApp number" values={values} placeholder="+94 7X XXX XXXX" />
+          <F name="whatsapp" label="WhatsApp - Principal / office" values={values} placeholder="+94 7X XXX XXXX" help="Parents can message this number from the Admission page." />
+          <F name="teacherWhatsapp" label="WhatsApp - Teacher" values={values} placeholder="+94 7X XXX XXXX" />
           <F name="email" label="Email" values={values} />
           <F name="address" label="Address" values={values} />
           <F name="mapQuery" label="Map location" values={values} help='Place name as typed in Google Maps, or coordinates like "6.8412,79.9645".' />

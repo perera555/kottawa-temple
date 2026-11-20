@@ -36,7 +36,8 @@ export const sectionSettings = pgTable("section_settings", {
   section: text("section").primaryKey(), // temple | dhamma | montessori
   phone: text("phone").notNull().default(""),
   email: text("email").notNull().default(""),
-  whatsapp: text("whatsapp").notNull().default(""),
+  whatsapp: text("whatsapp").notNull().default(""), // principal / office
+  teacherWhatsapp: text("teacher_whatsapp").notNull().default(""),
   address: text("address").notNull().default(""),
   mapQuery: text("map_query").notNull().default(""), // Google Maps search text or "lat,lng"
   facebookUrl: text("facebook_url").notNull().default(""),
@@ -153,6 +154,29 @@ export const students = pgTable("students", {
   // Only students with this flag appear on the public site (name, class, photo, achievement)
   showOnWebsite: boolean("show_on_website").notNull().default(false),
   active: boolean("active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+/** Online student registration (Dhamma School / Montessori admissions) */
+export const applications = pgTable("applications", {
+  id: serial("id").primaryKey(),
+  section: text("section").notNull(), // dhamma | montessori
+  userId: integer("user_id"),
+  childName: text("child_name").notNull(),
+  dateOfBirth: date("date_of_birth"),
+  gender: text("gender").notNull().default(""),
+  grade: text("grade").notNull().default(""),
+  schoolName: text("school_name").notNull().default(""),
+  parentName: text("parent_name").notNull(),
+  relationship: text("relationship").notNull().default(""),
+  phone: text("phone").notNull(),
+  email: text("email").notNull().default(""),
+  address: text("address").notNull().default(""),
+  notes: text("notes").notNull().default(""), // medical / special needs
+  photoUrl: text("photo_url").notNull().default(""),
+  // pending | accepted | waiting | rejected
+  status: text("status").notNull().default("pending"),
+  admissionNo: text("admission_no").notNull().default(""),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

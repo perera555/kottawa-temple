@@ -40,7 +40,7 @@ export default async function ResourceList({ params, searchParams }: PageProps<"
   const conds: SQL[] = [];
   if (!isUsers) conds.push(eq(table.section, section));
   if (q) {
-    const searchCols = ["name", "title", "email", "memberNo", "phone"].filter((c) => table[c]);
+    const searchCols = ["name", "title", "email", "memberNo", "phone", "childName", "parentName", "admissionNo", "donor"].filter((c) => table[c]);
     conds.push(or(...searchCols.map((c) => ilike(table[c], `%${q}%`)))!);
   }
   const rows: any[] = await db.select().from(table).where(conds.length ? and(...conds) : undefined).orderBy(desc(table.id)).limit(500);
@@ -52,6 +52,11 @@ export default async function ResourceList({ params, searchParams }: PageProps<"
     const v = row[col];
     if (TOGGLES[key]?.includes(col)) return <ToggleCell resourceKey={key} id={row.id} field={col} value={!!v} />;
     if (key === "dana" && col === "status") return <StatusCell resourceKey={key} id={row.id} value={v} options={["pending", "confirmed", "cancelled"]} />;
+    if (key === "applications" && col === "status")
+      return <StatusCell resourceKey={key} id={row.id} value={v} options={["pending", "waiting", "accepted", "rejected"]} />;
+    if (col === "photoUrl")
+      // eslint-disable-next-line @next/next/no-img-element
+      return v ? <img src={v} alt="" className="h-10 w-10 rounded-lg object-cover" /> : <span className="text-muted">—</span>;
     if (col === "avatarUrl") return <Avatar name={row.name} src={v} size={36} online={isOnline(row.lastSeenAt)} />;
     if (col === "lastSeenAt")
       return isOnline(v) ? (
@@ -118,7 +123,7 @@ export default async function ResourceList({ params, searchParams }: PageProps<"
 
       <div className="card card-flat overflow-x-auto">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-line bg-paper-2 text-xs uppercase tracking-wide text-muted">
+          <thead className="hero-bg text-xs uppercase tracking-wide text-white shadow-[0_4px_0_rgba(0,0,0,0.2)]">
             <tr>
               {r.columns.map((c) => <th key={c} className="px-4 py-3 font-semibold">{labelOf(c)}</th>)}
               <th className="px-4 py-3" />

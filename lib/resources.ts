@@ -30,6 +30,7 @@ export type ResourceKey =
   | "videos"
   | "teachers"
   | "students"
+  | "applications"
   | "leaders"
   | "testimonials"
   | "messages"
@@ -167,6 +168,39 @@ export const RESOURCES: Record<ResourceKey, Resource> = {
       { name: "achievement", label: "Achievement (shown publicly)", type: "textarea" },
       { name: "showOnWebsite", label: "Show on website (name, class, photo, achievement only)", type: "checkbox" },
       { name: "active", label: "Currently enrolled", type: "checkbox" },
+    ],
+  },
+  applications: {
+    key: "applications",
+    label: "Admissions (Online)",
+    singular: "Application",
+    sections: ["dhamma", "montessori"],
+    columns: ["photoUrl", "childName", "grade", "parentName", "phone", "status", "admissionNo", "createdAt"],
+    canCreate: true,
+    fields: [
+      { name: "childName", label: "Child's full name", type: "text", required: true },
+      { name: "dateOfBirth", label: "Date of birth", type: "date" },
+      { name: "gender", label: "Gender", type: "select", options: [
+        { value: "", label: "-" },
+        { value: "boy", label: "Boy" },
+        { value: "girl", label: "Girl" },
+      ] },
+      { name: "grade", label: "Grade / class applying for", type: "text" },
+      { name: "schoolName", label: "Day school", type: "text" },
+      { name: "parentName", label: "Parent / guardian", type: "text", required: true },
+      { name: "relationship", label: "Relationship", type: "text" },
+      { name: "phone", label: "Phone", type: "text", required: true },
+      { name: "email", label: "Email", type: "email" },
+      { name: "address", label: "Address", type: "text" },
+      { name: "notes", label: "Medical / special notes", type: "textarea" },
+      { name: "photoUrl", label: "Child's photo", type: "image" },
+      { name: "status", label: "Status", type: "select", options: [
+        { value: "pending", label: "Pending" },
+        { value: "waiting", label: "Waiting list" },
+        { value: "accepted", label: "Accepted (creates student)" },
+        { value: "rejected", label: "Not accepted" },
+      ] },
+      { name: "admissionNo", label: "Admission No. (auto when accepted)", type: "text" },
     ],
   },
   leaders: {
