@@ -18,6 +18,7 @@ import {
   UserRound,
   Users,
   Video,
+  Radio,
 } from "lucide-react";
 
 const ICONS: Record<string, React.ComponentType<{ size?: number }>> = {
@@ -34,6 +35,7 @@ const ICONS: Record<string, React.ComponentType<{ size?: number }>> = {
   registrations: ClipboardList,
   "daily-dana": Utensils,
   monthly: CalendarPlus,
+  settings: Radio,
   users: Users,
 };
 

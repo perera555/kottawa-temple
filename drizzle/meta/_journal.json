@@ -29,6 +29,13 @@
       "when": 1794893233712,
       "tag": "0003_dana_roster_resets_agenda",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1795154962454,
+      "tag": "0004_section_settings",
+      "breakpoints": true
     }
   ]
 }

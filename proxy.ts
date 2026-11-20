@@ -1,13 +1,31 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { SECTION_BASE, SHARED_PREFIXES, sectionForHost } from "./lib/hosts";
 import { isAdminRole, SESSION_COOKIE, verifySession } from "./lib/session";
 
-// Optimistic gate for /admin and /account. Every admin page and server action
-// also re-checks the session, so this is not the only protection.
-// The public website needs no login.
+/**
+ * 1. Separate websites: a request to the Montessori / Dhamma School address is
+ *    rewritten into that section (e.g. "/" -> "/montessori").
+ * 2. Optimistic login gate for /admin and /account (pages re-check the session).
+ */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const user = await verifySession(request.cookies.get(SESSION_COOKIE)?.value);
 
+  const section = sectionForHost(request.headers.get("host"));
+  if (section) {
+    const base = SECTION_BASE[section];
+    const shared = SHARED_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"));
+    const isFile = /\.[a-z0-9]+$/i.test(pathname);
+    if (!shared && !isFile && !pathname.startsWith(base)) {
+      const url = request.nextUrl.clone();
+      url.pathname = pathname === "/" ? base : base + pathname;
+      return NextResponse.rewrite(url);
+    }
+  }
+
+  const protectedPath = pathname.startsWith("/admin") || pathname.startsWith("/account");
+  if (!protectedPath) return NextResponse.next();
+
+  const user = await verifySession(request.cookies.get(SESSION_COOKIE)?.value);
   if (!user) {
     const url = new URL("/login", request.url);
     url.searchParams.set("next", pathname);
@@ -20,5 +38,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin", "/admin/:path*", "/account", "/account/:path*"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };

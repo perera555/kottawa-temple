@@ -148,6 +148,9 @@ export function LoginForm({ next }: { next?: string }) {
       <input type="hidden" name="next" value={next ?? ""} />
       <Field label="Email"><input name="email" type="email" required autoComplete="email" className="input" /></Field>
       <Field label="Password"><input name="password" type="password" required autoComplete="current-password" className="input" /></Field>
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" name="remember" defaultChecked className="h-4 w-4" /> Keep me signed in (90 days) / මාව මතක තබාගන්න
+      </label>
       <Alert state={state} />
       <button className="btn btn-primary w-full justify-center" disabled={pending}>{pending ? "Signing in..." : "Login"}</button>
     </form>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SocialFeed } from "@/components/social";
 import { Award, BookOpen, Users, Megaphone } from "lucide-react";
 import { DharmaWheel } from "@/components/dharma-wheel";
 import { Hero3D } from "@/components/three/hero-3d";
@@ -88,6 +89,18 @@ export default async function DhammaHome() {
         </Container>
       )}
 
+      {/* SOCIAL MEDIA - Facebook & YouTube update automatically */}
+      <section className="py-16">
+        <Container>
+          <SectionTitle
+            title={lang === "si" ? "සමාජ මාධ්‍ය" : "Social Media"}
+            sub={lang === "si" ? "Facebook සහ YouTube හි නවතම පළකිරීම් - ස්වයංක්‍රීයව යාවත්කාලීන වේ" : "Our latest Facebook and YouTube posts — updated automatically"}
+            href="/dhamma-school/live"
+            linkLabel={lang === "si" ? "🔴 සජීවී" : "🔴 Live"}
+          />
+          <SocialFeed section="dhamma" lang={lang} compact />
+        </Container>
+      </section>
       {reviews.length > 0 && (
         <Container className="pb-16">
           <SectionTitle title={si ? "දෙමාපිය අදහස්" : "Parents say"} href="/dhamma-school/reviews" linkLabel={si ? "අදහසක් ලියන්න" : "Write a review"} />

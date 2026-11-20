@@ -264,6 +264,81 @@ export async function saveDailyDana(month: string, _prev: FormState, fd: FormDat
   return { ok: true, message: `Saved ${rows.length} dana entries for ${month}.` };
 }
 
+async function resolveYoutubeChannelId(url: string): Promise<string | null> {
+  const direct = /youtube\.com\/channel\/(UC[\w-]{20,})/.exec(url);
+  if (direct) return direct[1];
+  try {
+    const res = await fetch(url, { headers: { "accept-language": "en" }, signal: AbortSignal.timeout(8000) });
+    const html = await res.text();
+    const m =
+      /<meta itemprop="identifier" content="(UC[\w-]{20,})"/.exec(html) ||
+      /"externalId":"(UC[\w-]{20,})"/.exec(html) ||
+      /"channelId":"(UC[\w-]{20,})"/.exec(html) ||
+      /youtube\.com\/channel\/(UC[\w-]{20,})/.exec(html);
+    return m?.[1] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** One-click Go Live / End Live from the dashboard. */
+export async function setLive(section: string, _prev: FormState, fd: FormData): Promise<FormState> {
+  const user = await getSession();
+  if (!user || !isAdminRole(user.role) || !canManage(user, section)) return { error: "Unauthorized" };
+  const isLive = fd.get("action") === "start";
+  const raw = String(fd.get("liveUrl") ?? "").trim();
+  const liveUrl = raw && !/^https?:\/\//i.test(raw) ? `https://${raw}` : raw;
+  const liveTitle = String(fd.get("liveTitle") ?? "").trim().slice(0, 200);
+  if (isLive && !liveUrl) return { error: "Paste the Facebook or YouTube live link first." };
+  const set = isLive ? { isLive, liveUrl, liveTitle, updatedAt: new Date() } : { isLive: false, updatedAt: new Date() };
+  await db
+    .insert(schema.sectionSettings)
+    .values({ section, ...set })
+    .onConflictDoUpdate({ target: schema.sectionSettings.section, set });
+  revalidateSite();
+  return { ok: true, message: isLive ? "You are LIVE on the website." : "Live ended." };
+}
+
+/** Save a section's contact, social and live settings. */
+export async function saveSettings(section: string, _prev: FormState, fd: FormData): Promise<FormState> {
+  const user = await getSession();
+  if (!user || !isAdminRole(user.role) || !canManage(user, section)) return { error: "Unauthorized" };
+  const s = (k: string, max = 500) => String(fd.get(k) ?? "").trim().slice(0, max);
+  const url = (k: string) => {
+    const v = s(k);
+    if (!v) return "";
+    return /^https?:\/\//i.test(v) ? v : `https://${v}`;
+  };
+  const values = {
+    phone: s("phone", 60),
+    email: s("email", 200),
+    whatsapp: s("whatsapp", 40),
+    address: s("address", 300),
+    mapQuery: s("mapQuery", 300),
+    facebookUrl: url("facebookUrl"),
+    youtubeUrl: url("youtubeUrl"),
+    youtubeChannelId: s("youtubeChannelId", 60),
+    instagramUrl: url("instagramUrl"),
+    tiktokUrl: url("tiktokUrl"),
+    isLive: fd.get("isLive") === "on",
+    liveUrl: url("liveUrl"),
+    liveTitle: s("liveTitle", 200),
+    updatedAt: new Date(),
+  };
+  if (values.isLive && !values.liveUrl) return { error: "Paste the live video link before switching LIVE on." };
+
+  // Find the YouTube channel ID automatically from a normal channel link (@handle, /c/, /user/)
+  if (values.youtubeUrl && !/^UC[\w-]{20,}$/.test(values.youtubeChannelId)) {
+    values.youtubeChannelId = (await resolveYoutubeChannelId(values.youtubeUrl)) ?? values.youtubeChannelId;
+  }
+  await db
+    .insert(schema.sectionSettings)
+    .values({ section, ...values })
+    .onConflictDoUpdate({ target: schema.sectionSettings.section, set: values });
+  revalidateSite();
+  return { ok: true, message: values.isLive ? "Saved — the LIVE banner is now showing on the website." : "Settings saved." };
+}
+
 export async function listSectionsFor() {
   const user = await getSession();
   return user ? allowedSections(user) : [];

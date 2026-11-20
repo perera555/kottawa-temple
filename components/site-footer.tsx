@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { getLang } from "@/lib/lang";
-import { SECTION_INFO, TEMPLE, tr } from "@/lib/site";
+import { getSettings } from "@/lib/settings";
+import { SECTION_INFO, TEMPLE, tr, type Section } from "@/lib/site";
 import { DharmaWheel } from "./dharma-wheel";
+import { SocialButtons } from "./social";
 
-export async function SiteFooter() {
-  const lang = await getLang();
-  const t = SECTION_INFO.temple;
+export async function SiteFooter({ section = "temple" }: { section?: Section }) {
+  const [lang, st] = await Promise.all([getLang(), getSettings(section)]);
+  const info = SECTION_INFO[section];
   return (
     <footer className="mt-auto bg-[#2a0f0b] text-white/80">
       <div className="flag-stripe h-1.5" />
@@ -15,8 +17,8 @@ export async function SiteFooter() {
           <div className="flex items-center gap-3">
             <DharmaWheel className="h-12 w-12 text-flag-yellow" />
             <div>
-              <p className="font-display text-xl text-white">{tr(TEMPLE.name, lang)}</p>
-              <p className="text-sm">{tr(TEMPLE.place, lang)}</p>
+              <p className="font-display text-xl text-white">{tr(info.name, lang)}</p>
+              <p className="text-sm">{section === "temple" ? tr(TEMPLE.place, lang) : `${tr(TEMPLE.name, lang)}, ${tr(TEMPLE.place, lang)}`}</p>
             </div>
           </div>
           <p className="mt-4 max-w-md text-sm leading-relaxed">
@@ -27,11 +29,15 @@ export async function SiteFooter() {
           <p className="mt-4 text-sm italic text-flag-yellow/90">
             {lang === "si" ? "සබ්බදානං ධම්මදානං ජිනාති" : "“The gift of Dhamma excels all gifts.”"}
           </p>
+          <div className="mt-5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white">{lang === "si" ? "සමාජ මාධ්‍ය" : "Follow us"}</p>
+            <SocialButtons settings={st} />
+          </div>
         </div>
         <div>
           <p className="mb-3 font-semibold text-white">{lang === "si" ? "පිටු" : "Explore"}</p>
           <ul className="space-y-2 text-sm">
-            {t.nav.slice(1).map((n) => (
+            {info.nav.slice(1).map((n) => (
               <li key={n.href}>
                 <Link href={n.href} className="hover:text-flag-yellow">
                   {tr(n.label, lang)}
@@ -43,9 +49,9 @@ export async function SiteFooter() {
         <div>
           <p className="mb-3 font-semibold text-white">{lang === "si" ? "සම්බන්ධ වන්න" : "Contact"}</p>
           <ul className="space-y-3 text-sm">
-            <li className="flex gap-2"><MapPin size={16} className="mt-0.5 shrink-0" /> {tr(TEMPLE.address, lang)}</li>
-            <li className="flex gap-2"><Phone size={16} className="mt-0.5 shrink-0" /> {TEMPLE.phone}</li>
-            <li className="flex gap-2"><Mail size={16} className="mt-0.5 shrink-0" /> {TEMPLE.email}</li>
+            <li className="flex gap-2"><MapPin size={16} className="mt-0.5 shrink-0" /> {st.address}</li>
+            <li className="flex gap-2"><Phone size={16} className="mt-0.5 shrink-0" /> <a href={`tel:${st.phone}`} className="hover:text-flag-yellow">{st.phone}</a></li>
+            <li className="flex gap-2"><Mail size={16} className="mt-0.5 shrink-0" /> <a href={`mailto:${st.email}`} className="hover:text-flag-yellow">{st.email}</a></li>
           </ul>
           <div className="mt-4 flex gap-3 text-xs">
             <Link href="/register" className="underline hover:text-flag-yellow">{lang === "si" ? "සාමාජික වන්න" : "Become a member"}</Link>
@@ -54,7 +60,7 @@ export async function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-white/10 py-4 text-center text-xs">
-        © {new Date().getFullYear()} {tr(TEMPLE.name, lang)}, {tr(TEMPLE.place, lang)}
+        © {new Date().getFullYear()} {tr(info.name, lang)} · {tr(TEMPLE.name, lang)}, {tr(TEMPLE.place, lang)}
       </div>
     </footer>
   );

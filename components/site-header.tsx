@@ -3,6 +3,7 @@ import { BookOpen, Landmark, LogOut, Sprout, UserRound } from "lucide-react";
 import { logout } from "@/app/actions/auth";
 import { getSession } from "@/lib/auth";
 import { touchPresence } from "@/lib/presence";
+import { sectionHomeUrl } from "@/lib/hosts";
 import { UserMenu } from "./user-menu";
 import { getLang } from "@/lib/lang";
 import { isAdminRole } from "@/lib/session";
@@ -104,7 +105,7 @@ export async function SiteHeader({ section }: { section: Section }) {
               return (
                 <Link
                   key={s}
-                  href={SECTION_INFO[s].base || "/"}
+                  href={sectionHomeUrl(s)}
                   data-section={s}
                   aria-current={active ? "page" : undefined}
                   className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold transition ${

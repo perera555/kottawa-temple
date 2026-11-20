@@ -1,25 +1,51 @@
 import Link from "next/link";
-import { CalendarDays, CalendarRange, Flower2, Images, Mail, MapPin, Megaphone, Phone, PlayCircle, Star } from "lucide-react";
+import { CalendarDays, CalendarRange, Flower2, Images, Mail, MapPin, Megaphone, Phone, PlayCircle, Radio, Star } from "lucide-react";
 import { getSession } from "@/lib/auth";
 import { getEvents, getGallery, getMonth, getPosts, getRegistrableEvents, getSchedule, getTestimonials, getVideos } from "@/lib/data";
 import { CalendarView, ProgrammePanel } from "./programme";
 import { MonthTimeline } from "./timeline";
+import { LiveBanner, LivePlayer, SocialButtons, SocialFeed } from "./social";
+import { getSettings } from "@/lib/settings";
 import { getLang } from "@/lib/lang";
 import { EVENT_CATEGORIES, SECTION_INFO, TEMPLE, tr, UI, VIDEO_CATEGORIES, type Section } from "@/lib/site";
 import { ContactForm, ProgrammeRegistrationForm, ReviewForm } from "./forms";
 import { GalleryGrid } from "./gallery-grid";
-import { Container, Empty, EventCard, fmtDate, PageHero, PostCard, ReviewCard, Stars } from "./ui";
+import { Container, Empty, EventCard, fmtDate, PageHero, PostCard, ReviewCard, SectionTitle, Stars } from "./ui";
 import { VideoCard } from "./video-card";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
 
-export function SectionShell({ section, children }: { section: Section; children: React.ReactNode }) {
+export async function SectionShell({ section, children }: { section: Section; children: React.ReactNode }) {
+  const lang = await getLang();
   return (
     <div data-section={section} className="flex min-h-screen flex-col">
       <SiteHeader section={section} />
+      <LiveBanner section={section} lang={lang} />
       <main className="flex-1">{children}</main>
-      <SiteFooter />
+      <SiteFooter section={section} />
     </div>
+  );
+}
+
+export async function LivePage({ section }: { section: Section }) {
+  const lang = await getLang();
+  const si = lang === "si";
+  return (
+    <>
+      <PageHero
+        eyebrow={tr(SECTION_INFO[section].name, lang)}
+        title={si ? "සජීවී සහ සමාජ මාධ්‍ය" : "Live & Social Media"}
+        subtitle={si ? "Facebook සහ YouTube සජීවී විකාශන සහ නවතම පළකිරීම්" : "Facebook & YouTube live streams and our latest posts"}
+        icon={Radio}
+      />
+      <Container className="space-y-14 py-12">
+        <LivePlayer section={section} lang={lang} />
+        <section>
+          <SectionTitle title={si ? "නවතම පළකිරීම්" : "Latest posts"} sub={si ? "ස්වයංක්‍රීයව යාවත්කාලීන වේ" : "Updates automatically from our pages"} />
+          <SocialFeed section={section} lang={lang} />
+        </section>
+      </Container>
+    </>
   );
 }
 
@@ -249,7 +275,7 @@ export async function RegistrationPage({ section, eventId }: { section: Section;
 }
 
 export async function ContactPage({ section }: { section: Section }) {
-  const [lang, user] = await Promise.all([getLang(), getSession()]);
+  const [lang, user, st] = await Promise.all([getLang(), getSession(), getSettings(section)]);
   const info = SECTION_INFO[section];
   return (
     <>
@@ -260,17 +286,18 @@ export async function ContactPage({ section }: { section: Section }) {
             <h2 className="font-display text-xl text-accent">{tr(info.name, lang)}</h2>
             <p className="text-sm text-muted">{tr(TEMPLE.name, lang)}, {tr(TEMPLE.place, lang)}</p>
             <ul className="mt-4 space-y-3 text-sm">
-              <li className="flex gap-2"><MapPin size={18} className="shrink-0 text-accent" /> {tr(TEMPLE.address, lang)}</li>
-              <li className="flex gap-2"><Phone size={18} className="shrink-0 text-accent" /> {TEMPLE.phone}</li>
-              <li className="flex gap-2"><Mail size={18} className="shrink-0 text-accent" /> {TEMPLE.email}</li>
+              <li className="flex gap-2"><MapPin size={18} className="shrink-0 text-accent" /> {st.address}</li>
+              <li className="flex gap-2"><Phone size={18} className="shrink-0 text-accent" /> <a href={`tel:${st.phone}`} className="hover:underline">{st.phone}</a></li>
+              <li className="flex gap-2"><Mail size={18} className="shrink-0 text-accent" /> <a href={`mailto:${st.email}`} className="hover:underline">{st.email}</a></li>
             </ul>
+            <div className="mt-4"><SocialButtons settings={st} /></div>
           </div>
           <div className="tile-3d overflow-hidden">
             <iframe
               title="Map"
               className="h-72 w-full"
               loading="lazy"
-              src="https://maps.google.com/maps?q=Sri%20Punyabhiwardhanaramaya%20Kottawa&z=15&output=embed"
+              src={`https://maps.google.com/maps?q=${encodeURIComponent(st.mapQuery)}&z=16&output=embed`}
             />
           </div>
         </div>

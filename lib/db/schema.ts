@@ -31,6 +31,25 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+/** Per-section settings: contact details, social accounts and live streaming */
+export const sectionSettings = pgTable("section_settings", {
+  section: text("section").primaryKey(), // temple | dhamma | montessori
+  phone: text("phone").notNull().default(""),
+  email: text("email").notNull().default(""),
+  whatsapp: text("whatsapp").notNull().default(""),
+  address: text("address").notNull().default(""),
+  mapQuery: text("map_query").notNull().default(""), // Google Maps search text or "lat,lng"
+  facebookUrl: text("facebook_url").notNull().default(""),
+  youtubeUrl: text("youtube_url").notNull().default(""),
+  youtubeChannelId: text("youtube_channel_id").notNull().default(""), // UC... for the live player
+  instagramUrl: text("instagram_url").notNull().default(""),
+  tiktokUrl: text("tiktok_url").notNull().default(""),
+  isLive: boolean("is_live").notNull().default(false),
+  liveUrl: text("live_url").notNull().default(""), // Facebook or YouTube live video link
+  liveTitle: text("live_title").notNull().default(""),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 /** One-time 6-digit codes for resetting a password */
 export const passwordResets = pgTable("password_resets", {
   id: serial("id").primaryKey(),

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SocialFeed } from "@/components/social";
 import { Check, Gift, Megaphone, Palette, Sparkles } from "lucide-react";
 import { Hero3D } from "@/components/three/hero-3d";
 import { Container, EventCard, Img, PostCard, ReviewCard, SectionTitle } from "@/components/ui";
@@ -129,6 +130,18 @@ export default async function MontessoriHome() {
         </Container>
       )}
 
+      {/* SOCIAL MEDIA - Facebook & YouTube update automatically */}
+      <section className="py-16">
+        <Container>
+          <SectionTitle
+            title={lang === "si" ? "සමාජ මාධ්‍ය" : "Social Media"}
+            sub={lang === "si" ? "Facebook සහ YouTube හි නවතම පළකිරීම් - ස්වයංක්‍රීයව යාවත්කාලීන වේ" : "Our latest Facebook and YouTube posts — updated automatically"}
+            href="/montessori/live"
+            linkLabel={lang === "si" ? "🔴 සජීවී" : "🔴 Live"}
+          />
+          <SocialFeed section="montessori" lang={lang} compact />
+        </Container>
+      </section>
       <section className="bg-paper-2 py-16">
         <Container>
           <SectionTitle title={si ? "💬 මව්පිය අදහස්" : "💬 What Parents Say"} href="/montessori/reviews" linkLabel={si ? "අදහසක් ලියන්න" : "Write a review"} />

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SocialFeed } from "@/components/social";
 import {
   Baby,
   BadgeCheck,
@@ -234,6 +235,18 @@ export default async function TempleHome() {
         </Container>
       </section>
 
+      {/* SOCIAL MEDIA - Facebook & YouTube update automatically */}
+      <section className="py-16">
+        <Container>
+          <SectionTitle
+            title={lang === "si" ? "සමාජ මාධ්‍ය" : "Social Media"}
+            sub={lang === "si" ? "Facebook සහ YouTube හි නවතම පළකිරීම් - ස්වයංක්‍රීයව යාවත්කාලීන වේ" : "Our latest Facebook and YouTube posts — updated automatically"}
+            href="/live"
+            linkLabel={lang === "si" ? "🔴 සජීවී" : "🔴 Live"}
+          />
+          <SocialFeed section="temple" lang={lang} compact />
+        </Container>
+      </section>
       {/* REVIEWS */}
       <section className="bg-paper-2 py-16">
         <Container>

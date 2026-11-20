@@ -20,11 +20,11 @@ function key() {
   return new TextEncoder().encode(secret);
 }
 
-export async function signSession(user: SessionUser) {
+export async function signSession(user: SessionUser, days = 7) {
   return new SignJWT({ ...user })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("7d")
+    .setExpirationTime(`${days}d`)
     .sign(key());
 }
 

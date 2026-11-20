@@ -25,6 +25,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     section: s,
     ...PANELS[s],
     items: [
+      { key: "settings", label: "Social Media & Live" },
       ...(s === "temple" ? [{ key: "daily-dana", label: "Daily Dana Roster" }] : []),
       { key: "monthly", label: "Monthly Pinkam List" },
       ...RESOURCE_KEYS.filter((k) => !RESOURCES[k].superAdminOnly && RESOURCES[k].sections.includes(s)).map((k) => ({

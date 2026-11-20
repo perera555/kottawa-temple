@@ -18,7 +18,9 @@ import {
   Video,
   Wifi,
 } from "lucide-react";
+import { GoLive } from "@/components/admin/go-live";
 import { Avatar } from "@/components/user-menu";
+import { getSettings } from "@/lib/settings";
 import { allowedSections, requireAdmin } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
 import { ONLINE_WINDOW_MS } from "@/lib/presence";
@@ -45,6 +47,7 @@ export default async function Dashboard({ searchParams }: PageProps<"/admin">) {
   const isTemple = section === "temple";
   const q = `?section=${section}`;
 
+  const st = await getSettings(section);
   const n = async (p: Promise<{ n: number }[]>) => (await p)[0]?.n ?? 0;
   const [unread, pendingReviews, pendingDana, regs, notices, events, photos, students, members, online, latestMsgs, latestRegs, upcoming, todayDana] =
     await Promise.all([
@@ -104,6 +107,15 @@ export default async function Dashboard({ searchParams }: PageProps<"/admin">) {
           {user.role === "super_admin" && <span><b className="text-2xl">{members}</b> user accounts</span>}
         </div>
       </div>
+
+      {/* One-click live */}
+      <GoLive
+        section={section}
+        isLive={st.isLive}
+        liveUrl={st.liveUrl}
+        liveTitle={st.liveTitle}
+        connected={[st.facebookUrl && "Facebook", st.youtubeUrl && "YouTube", st.instagramUrl && "Instagram", st.tiktokUrl && "TikTok", st.whatsapp && "WhatsApp"].filter(Boolean) as string[]}
+      />
 
       {/* Stat tiles */}
       <div className="grid grid-cols-2 gap-5 md:grid-cols-3 xl:grid-cols-5">

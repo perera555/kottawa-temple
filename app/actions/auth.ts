@@ -12,15 +12,15 @@ export type FormState = { ok?: boolean; error?: string; message?: string } | und
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
 
-async function startSession(user: SessionUser) {
-  const token = await signSession(user);
+async function startSession(user: SessionUser, days = 7) {
+  const token = await signSession(user, days);
   const c = await cookies();
   c.set(SESSION_COOKIE, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: 60 * 60 * 24 * days,
   });
 }
 
@@ -44,7 +44,7 @@ export async function login(_: FormState, fd: FormData): Promise<FormState> {
   }
 
   const role = user.role as SessionUser["role"];
-  await startSession({ id: user.id, name: user.name, email: user.email, role });
+  await startSession({ id: user.id, name: user.name, email: user.email, role }, fd.get("remember") === "on" ? 90 : 7);
   redirect(safeNext(str(fd, "next"), isAdminRole(role) ? "/admin" : "/account"));
 }
 
