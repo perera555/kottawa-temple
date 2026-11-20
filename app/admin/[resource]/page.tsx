@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { desc, eq, ilike, or, type SQL, and } from "drizzle-orm";
 import { CalendarPlus, Pencil, Plus } from "lucide-react";
 import { DeleteButton, StatusCell, ToggleCell } from "@/components/admin/row-actions";
+import { StudentCards } from "@/components/admin/student-cards";
 import { Avatar } from "@/components/user-menu";
 import { isOnline } from "@/lib/presence";
 import { allowedSections, requireAdmin } from "@/lib/auth";
@@ -80,6 +81,8 @@ export default async function ResourceList({ params, searchParams }: PageProps<"
   };
 
   const base = `/admin/${key}`;
+  const cardKind = key === "students" || key === "applications" ? key : null;
+  const view = sp.view === "table" ? "table" : "cards";
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -115,12 +118,34 @@ export default async function ResourceList({ params, searchParams }: PageProps<"
             ))}
           </div>
         )}
+        {cardKind && (
+          <div className="flex gap-1 rounded-xl bg-white p-1 shadow-[0_3px_0_var(--line)]">
+            {(["cards", "table"] as const).map((v) => (
+              <Link
+                key={v}
+                href={`${base}?section=${section}${q ? `&q=${encodeURIComponent(q)}` : ""}&view=${v}`}
+                className={`rounded-lg px-3 py-1 text-sm font-semibold capitalize ${view === v ? "bg-accent text-white" : "text-ink"}`}
+              >
+                {v}
+              </Link>
+            ))}
+          </div>
+        )}
         <form className="ml-auto flex gap-2">
           {!isUsers && <input type="hidden" name="section" value={section} />}
+          {cardKind && <input type="hidden" name="view" value={view} />}
           <input name="q" defaultValue={q} placeholder="Search…" className="input w-56 py-1.5!" />
         </form>
       </div>
 
+      {cardKind && view === "cards" ? (
+        <>
+          <p className="text-sm text-muted">
+            {rows.length} {key === "applications" ? "applications" : "students"} · {SECTION_INFO[section].name.en}
+          </p>
+          <StudentCards kind={cardKind} rows={rows} base={base} section={section} />
+        </>
+      ) : (
       <div className="card card-flat overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead className="hero-bg text-xs uppercase tracking-wide text-white shadow-[0_4px_0_rgba(0,0,0,0.2)]">
@@ -149,6 +174,7 @@ export default async function ResourceList({ params, searchParams }: PageProps<"
           </tbody>
         </table>
       </div>
+      )}
     </div>
   );
 }
